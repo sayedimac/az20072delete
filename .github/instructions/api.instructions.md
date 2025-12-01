@@ -2,7 +2,8 @@
 applyTo: "src/api"
 ---
 
-- This is a c# (dotnet 8.0) Function App that runs in Isolated Mode
-- It connects to Azure Services via connection strings in environment variables  (like an Azure Storage Account)
-- One Function retrieves  a list of blobs from a container (parameter)
-- Another Function reads data from an Azure Storage Table with the partition and row keys (parameters)
+- This is a C# Azure Functions app targeting .NET 8.0 (Isolated Worker)
+- Connects to Azure services via connection strings in environment variables (e.g., Azure Storage Account)
+- One function retrieves a list of blobs from a specified container (container name as parameter)
+- Another function reads data from Azure Table Storage using partition key and row key (parameters)
+- Use latest SDKs compatible with .NET 8 (Azure.Storage.Blobs, Azure.Data.Tables) and the isolated worker (Microsoft.Azure.Functions.Worker)

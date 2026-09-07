@@ -8,6 +8,8 @@ namespace TheChatApp.Controllers;
 
 public class HomeController : Controller
 {
+    // a varaible for storing the number of blobs
+    private int _blobCount = 0;
     private readonly BlobServiceClient? _blobServiceClient;
     private readonly IConfiguration _config;
     private readonly ILogger<HomeController> _logger;

@@ -40,7 +40,13 @@ else
             @foreach (var blob in Model.Blobs)
             {
                 <tr>
-                    <td>@blob.Name</td>
+                    <td>
+                        <a asp-controller="Home"
+                           asp-action="Document"
+                           asp-route-blobName="@blob.Name"
+                           target="_blank"
+                           rel="noopener noreferrer">@blob.Name</a>
+                    </td>
                     <td>@($"{blob.Size:N0}") bytes</td>
                     <td>@blob.LastModified?.ToString("yyyy-MM-dd HH:mm")</td>
                 </tr>

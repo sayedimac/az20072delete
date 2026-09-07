@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Azure;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Mvc;
 using TheChatApp.Models;
@@ -9,10 +10,15 @@ public class HomeController : Controller
 {
     private readonly BlobServiceClient? _blobServiceClient;
     private readonly IConfiguration _config;
+    private readonly ILogger<HomeController> _logger;
 
-    public HomeController(IConfiguration config, BlobServiceClient? blobServiceClient = null)
+    public HomeController(
+        IConfiguration config,
+        ILogger<HomeController> logger,
+        BlobServiceClient? blobServiceClient = null)
     {
         _config = config;
+        _logger = logger;
         _blobServiceClient = blobServiceClient;
     }
 
@@ -38,6 +44,39 @@ public class HomeController : Controller
         }
 
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Document(string? blobName, CancellationToken cancellationToken)
+    {
+        var containerName = _config["BlobStorage:ContainerName"];
+        if (_blobServiceClient == null || string.IsNullOrWhiteSpace(containerName))
+            return NotFound();
+
+        if (string.IsNullOrWhiteSpace(blobName))
+            return BadRequest();
+
+        try
+        {
+            var blob = _blobServiceClient
+                .GetBlobContainerClient(containerName)
+                .GetBlobClient(blobName);
+            var download = await blob.DownloadStreamingAsync(cancellationToken: cancellationToken);
+            var contentType = string.IsNullOrWhiteSpace(download.Value.Details.ContentType)
+                ? "application/octet-stream"
+                : download.Value.Details.ContentType;
+
+            return File(download.Value.Content, contentType);
+        }
+        catch (RequestFailedException ex) when (ex.Status == StatusCodes.Status404NotFound)
+        {
+            return NotFound();
+        }
+        catch (RequestFailedException ex)
+        {
+            _logger.LogError(ex, "Unable to open blob {BlobName} from container {ContainerName}.", blobName, containerName);
+            return StatusCode(StatusCodes.Status502BadGateway);
+        }
     }
 
     public IActionResult Privacy()

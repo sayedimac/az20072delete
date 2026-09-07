@@ -1,0 +1,15 @@
+- generic [active] [ref=f4e1]:
+  - banner [ref=f4e2]:
+    - navigation [ref=f4e3]:
+      - generic [ref=f4e4]:
+        - link "TheChatApp" [ref=f4e5] [cursor=pointer]:
+          - /url: /
+        - button "Toggle navigation" [ref=f4e6] [cursor=pointer]
+  - main [ref=f4e9]:
+    - heading "Privacy Policy" [level=1] [ref=f4e10]
+    - paragraph [ref=f4e11]: Use this page to detail your site's privacy policy.
+  - contentinfo [ref=f4e12]:
+    - generic [ref=f4e13]:
+      - text: © 2026 - TheChatApp -
+      - link "Privacy" [ref=f4e14] [cursor=pointer]:
+        - /url: /Home/Privacy

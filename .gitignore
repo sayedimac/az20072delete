@@ -418,6 +418,18 @@ FodyWeavers.xsd
 # Local History for Visual Studio Code
 .history/
 
+# Generated visual UI test evidence (keep folder placeholders)
+!tests/visual/artifacts/
+!tests/visual/artifacts/screenshots/
+!tests/visual/artifacts/traces/
+!tests/visual/artifacts/reports/
+tests/visual/artifacts/screenshots/*
+tests/visual/artifacts/traces/*
+tests/visual/artifacts/reports/*
+!tests/visual/artifacts/screenshots/.gitkeep
+!tests/visual/artifacts/traces/.gitkeep
+!tests/visual/artifacts/reports/.gitkeep
+
 # Built Visual Studio Code Extensions
 *.vsix
 

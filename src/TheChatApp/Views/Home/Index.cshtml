@@ -1,8 +1,50 @@
-﻿@{
+﻿@model TheChatApp.Models.BlobListViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<div class="text-center mb-4">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<h2>Azure Blob Storage</h2>
+
+@if (!Model.IsConfigured)
+{
+    <div class="alert alert-warning">
+        Configure <code>BlobStorage:ConnectionString</code> and <code>BlobStorage:ContainerName</code> in <code>appsettings.json</code> to list blobs.
+    </div>
+}
+else if (Model.Error != null)
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> @Model.Error
+    </div>
+}
+else if (Model.Blobs.Count == 0)
+{
+    <p class="text-muted">No blobs found in container <strong>@Model.ContainerName</strong>.</p>
+}
+else
+{
+    <p>Container: <strong>@Model.ContainerName</strong> &mdash; @Model.Blobs.Count blob(s)</p>
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last Modified</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var blob in Model.Blobs)
+            {
+                <tr>
+                    <td>@blob.Name</td>
+                    <td>@($"{blob.Size:N0}") bytes</td>
+                    <td>@blob.LastModified?.ToString("yyyy-MM-dd HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

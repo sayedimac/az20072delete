@@ -1,37 +1,53 @@
 using System.Diagnostics;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Mvc;
 using TheChatApp.Models;
 
 namespace TheChatApp.Controllers;
 
-/// <summary>
-/// Handles requests for the application's main pages.
-/// </summary>
 public class HomeController : Controller
 {
-    /// <summary>
-    /// Displays the home page.
-    /// </summary>
-    public IActionResult Index()
+    private readonly BlobServiceClient? _blobServiceClient;
+    private readonly IConfiguration _config;
+
+    public HomeController(IConfiguration config, BlobServiceClient? blobServiceClient = null)
     {
-        return View();
+        _config = config;
+        _blobServiceClient = blobServiceClient;
     }
 
-    /// <summary>
-    /// Displays the privacy page.
-    /// </summary>
+    public async Task<IActionResult> Index()
+    {
+        var model = new BlobListViewModel
+        {
+            ContainerName = _config["BlobStorage:ContainerName"] ?? string.Empty
+        };
+
+        if (_blobServiceClient != null && !string.IsNullOrWhiteSpace(model.ContainerName))
+        {
+            try
+            {
+                var container = _blobServiceClient.GetBlobContainerClient(model.ContainerName);
+                await foreach (var blob in container.GetBlobsAsync())
+                    model.Blobs.Add(new BlobItem(blob.Name, blob.Properties.ContentLength ?? 0, blob.Properties.LastModified));
+            }
+            catch (Exception ex)
+            {
+                model.Error = ex.Message;
+            }
+        }
+
+        return View(model);
+    }
+
     public IActionResult Privacy()
     {
         return View();
     }
 
-    /// <summary>
-    /// Displays error details without allowing the response to be cached.
-    /// </summary>
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        // Use the current activity ID when available; otherwise, use the HTTP trace ID.
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
